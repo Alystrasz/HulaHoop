@@ -1,12 +1,14 @@
 #!/bin/bash
 
 clear
-echo Projet HulaHoop - Interface GitHub
-echo ---------------------------------------
-echo 1- Pousser une modification sur le serveur
-echo 2- Récupérer le dernier code depuis le serveur
-echo 3- Quitter
-echo
+menu="
+\e[34mProjet HulaHoop - Interface GitHub\n\e[32m---------------------------------------\n
+\e[31m1-\e[0m Pousser une modification sur le serveur\n
+\e[31m2-\e[0m Récupérer le dernier code depuis le serveur\n
+\e[31m3-\e[0m Quitter\n
+\n
+"
+echo -e $menu
 echo Votre choix : 
 read choix
 
@@ -14,21 +16,14 @@ read choix
 if test $choix = 1
 then
 	clear
-	echo Projet HulaHoop - Interface GitHub
-	echo ---------------------------------------
-	echo 1- Pousser une modification sur le serveur
-	echo 2- Récupérer le dernier code depuis le serveur
-	echo 3- Quitter
-	echo
+	echo -e $menu
 	echo Entrez le nom du commit:
 	read commit
 	echo
-	echo Projet HulaHoop - Interface GitHub
-	echo ---------------------------------------
-	echo 1- Pousser une modification sur le serveur
-	echo 2- Récupérer le dernier code depuis le serveur
-	echo 3- Quitter
-	echo
+	echo -e $menu
+
+	git add *
+	git add */*
 
 	git commit -am "$commit"
 	echo
@@ -38,12 +33,7 @@ else
 	if test $choix = 2
 	then
 		clear
-		echo Projet HulaHoop - Interface GitHub
-		echo ---------------------------------------
-		echo 1- Pousser une modification sur le serveur
-		echo 2- Récupérer le dernier code depuis le serveur
-		echo 3- Quitter
-		echo
+		echo -e $menu 
 		git pull
 		echo
 	else
