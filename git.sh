@@ -26,7 +26,8 @@ then
 	git add */*
 
 	git commit -am "$commit"
-	echo
+	clear
+	echo -e $menu
 	git push origin master
 	echo
 else
