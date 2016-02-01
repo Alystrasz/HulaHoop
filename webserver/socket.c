@@ -11,7 +11,7 @@ int socket_serveur;
 
 int creer_serveur(int port)
 {
-  //Création de la socket serveur
+  /* Création de la socket serveur */
   if((socket_serveur = socket(AF_INET, SOCK_STREAM, 0)) == -1)
   {
     perror("socket_serveur");
@@ -19,14 +19,14 @@ int creer_serveur(int port)
     return -1;
   }
 
-  //Configuration de la socket serveur
+  /* Configuration de la socket serveur */
   struct sockaddr_in saddr ;
-  saddr.sin_family = AF_INET ;        /* Socket ipv4 */
-  saddr.sin_port = htons(port);      /* Port d ’ écoute */
-  saddr.sin_addr.s_addr = INADDR_ANY; /* écoute sur toutes les interfaces */
+  saddr.sin_family      = AF_INET ;     /* Socket ipv4 */
+  saddr.sin_port        = htons(port);  /* Port d ’ écoute */
+  saddr.sin_addr.s_addr = INADDR_ANY;   /* écoute sur toutes les interfaces */
   if(bind(socket_serveur, ( struct sockaddr *)&saddr, sizeof ( saddr )) == -1)
   {
-    perror("bind socker_serveur");
+    perror("bind socket_serveur");
     //TODO gestion des erreurs
     return -1;
   }
