@@ -15,9 +15,11 @@ if test $choix = 1
 then
 	echo Entrez le nom du commit:
 	read commit
+	echo
 	git commit -am "$commit"
 	echo
-	
+	git push origin master
+	echo
 else
 	if test $choix = 2
 	then
