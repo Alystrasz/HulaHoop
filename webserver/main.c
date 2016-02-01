@@ -1,14 +1,39 @@
-# include <stdio.h>
-# include <string.h>
-int main ( int argc , char ** argv ){
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
 
-	/* Arnold Robbins in the LJ of February ’95 , describing RCS */
-	if ( argc > 1 && strcmp ( argv [1] , "-advice" ) == 0) {
-		printf("Don’t Panic !\n");
-		return 42;
-	}
+#include <sys/types.h>
+#include <sys/socket.h>
 
-	printf("Need an advice ?\n");
+#include <unistd.h>
 
-	return 0;
+#include "socket.h"
+
+#define PORT 8080
+
+extern int socket_serveur;
+int main(void){
+
+  //Création du serveur sur le port PORT
+  if(creer_serveur(PORT) == -1)
+  {
+    perror("Creation du serveur");
+    //TODO gestion des erreurs
+    return -1;
+  }
+
+  //Acceptation d'une connexion 
+  int socket_client;
+  if((socket_client = accept(socket_serveur, NULL, NULL)) == -1)
+  {
+    perror("accept");
+    //TODO gestion des erreurs
+    return -1;
+  }
+  
+  /* On peut maintenant dialoguer avec le client */
+  const char* message_bienvenue = "Bonjour , bienvenue sur mon serveur\n ";
+  write(socket_client, message_bienvenue, strlen(message_bienvenue));
+  
+  return 0;
 }
