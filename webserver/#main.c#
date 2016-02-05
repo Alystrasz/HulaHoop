@@ -11,13 +11,10 @@
 #include "socket.h"
 
 #define PORT 8080
-#define BUFFER_READER 1500
+#define BUFFER_READER 1024
 
 extern int socket_serveur;
 int main(void){
-
-
-
   //Création du serveur sur le port PORT
   if(creer_serveur(PORT) == -1)
   {
@@ -45,9 +42,6 @@ int main(void){
   
   if(!fork())
   {
-      initialiser_signaux();
-
-    
     /* écrit le message de bienvenue */
     if(write(socket_client, message_bienvenue, strlen(message_bienvenue)) < 0)
     {

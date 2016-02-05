@@ -1,9 +1,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
 #include <stdio.h>
 #include <errno.h>
 #include <arpa/inet.h>
 
+#include <signal.h>
 
 #include "socket.h"
 
@@ -49,4 +51,27 @@ int creer_serveur(int port)
     return -1;
   }
   return 0;
+}
+
+void traitement_signal(int sig)
+{
+  printf("Signal %d reçu \n", sig);
+  int status;
+  waitpid(-1, &status, WUNTRACED);
+}
+
+void initialiser_signaux(void)
+{
+  struct sigaction sa;
+  sa.sa_handler = traitement_signal;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = SA_RESTART;
+  if(sigaction(SIGCHLD, &sa, NULL) == -1)
+  {
+    perror("sigaction(SIGCHLD)");
+  }
+  if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+  {
+    perror("signal");
+  }
 }
