@@ -5,7 +5,8 @@ menu="
 \e[34mProjet HulaHoop - Interface GitHub\n\e[32m---------------------------------------\n
 \e[31m1-\e[0m Pousser une modification sur le serveur\n
 \e[31m2-\e[0m Récupérer le dernier code depuis le serveur\n
-\e[31m3-\e[0m Quitter\n
+\e[31m3-\e[0m Consulter l'historique des commits\n
+\e[31m4-\e[0m Quitter\n
 \n
 "
 echo -e $menu
@@ -59,10 +60,17 @@ else
 		if test $choix = 3
 		then
 			clear
-			exit 0
-		else
-			./git.sh
+			echo -e $menu
+			git log
+		else	
+			if test $choix = 4
+			then
+				clear
+				exit 0
+			fi
 		fi
 	fi
 fi
 
+
+./git.sh
