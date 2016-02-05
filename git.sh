@@ -62,15 +62,17 @@ else
 			clear
 			echo -e $menu
 			git log
+			./git.sh
 		else	
 			if test $choix = 4
 			then
 				clear
 				exit 0
+			else
+				./git.sh
 			fi
 		fi
 	fi
 fi
 
 
-./git.sh
