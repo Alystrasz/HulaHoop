@@ -29,13 +29,24 @@ then
 	clear
 	echo -e $menu
 	
-	#echo "Entrez le nom du tag:"
-	#read tag
-	#git tag $tag
-	#clear
+	echo "Voulez-vous créer un tag ? [y/N]"
+	read t
+	if test $t = o
+	then
+		clear
+		echo -e $menu
+		echo "Entrez le nom du tag:"
+		read tag
+		git tag $tag
+		clear
+		echo -e $menu
+		git push --tag
+	else
+		clear
+		echo -e $menu
+		git push origin master
+	fi
 	
-	echo -e $menu
-	git push --tag
 	echo
 else
 	if test $choix = 2
