@@ -1,0 +1,17 @@
+1. Quittez votre serveur (Ctrl+C) et relancez le. Que se passe t’il ?
+   Le port est déjà utilisé:
+   bind socket_serveur: Address already in use
+   Creation du serveur: Address already in use
+
+2. Ajouter un petit délai avant l’envoi du message de bienvenue (1 seconde). Puis, exécutez la
+commande suivante : nc -z 127.0.0.1 8080. Que se passe t’il ?
+   Je ne reçois pas le message de bienvenue.
+
+3. Exécutez la commande suivante : telnet ::1 8080. Que se passe t’il ? Pourquoi ?
+   La connection est refusée:
+   Trying ::1...
+   telnet: Unable to connect to remote host: Connection refused
+   On ne gère que les adresses ipv4.
+
+4. Lancez deux clients simultanément. Que se passe t’il ? Pourquoi ?
+   Le second client ne reçoit pas le message de bienvenue car le serveur gère qu'une connection à la fois.

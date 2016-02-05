@@ -29,36 +29,36 @@ int main(void){
   int socket_client;
   char buffer_reader[BUFFER_READER];
   int sread = 0;
-  while(1)
+ 
+  if((socket_client = accept(socket_serveur, NULL, NULL)) == -1)
   {
-    if((socket_client = accept(socket_serveur, NULL, NULL)) == -1)
-    {
-      perror("accept");
-      //TODO gestion des erreurs
-      return 1;
-    }
+    perror("accept");
+    //TODO gestion des erreurs
+    return 1;
+  }
 
-    /* écrit le message de bienvenue */
-    if(write(socket_client, message_bienvenue, strlen(message_bienvenue)) < 0)
+  /* écrit le message de bienvenue */
+  sleep(1);
+  if(write(socket_client, message_bienvenue, strlen(message_bienvenue)) < 0)
+  {
+    perror("write");
+    return 1;
+  }
+  
+  /* Service de bégayement */
+  while((sread = read(socket_client, buffer_reader, BUFFER_READER)) > 0)
+  {
+    if(write(socket_client, buffer_reader, sread) < 0)
     {
       perror("write");
       return 1;
     }
-
-    /* Service de bégayement */
-    while((sread = read(socket_client, buffer_reader, BUFFER_READER)) > 0)
-    {
-      if(write(socket_client, buffer_reader, sread) < 0)
-      {
-	perror("write");
-	return 1;
-      }
-    }
-    if(sread == -1)
-    {
-      perror("read");
-      return 1;
-    }
   }
+  if(sread == -1)
+  {
+    perror("read");
+    return 1;
+  }
+  
   return 0;
 }
