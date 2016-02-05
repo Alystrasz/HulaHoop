@@ -1,2 +1,6 @@
-Seront indiquées dans ce fichier au fur et à mesure du développement les instructions nécessaires à qui voudra compiler, configurer et utiliser votre serveur.
+[Le chapitre 4 est en cours de développement. ;)]
 
+Seront indiquées dans ce fichier au fur et à mesure du développement les instructions nécessaires à qui voudra compiler, configurer et utiliser notre serveur.
+
+
+Pour le moment, il vous suffit de faire un make all depuis le dossier racine, puis lancer l'exécutable webserver/HulaHoop.
