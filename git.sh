@@ -28,11 +28,12 @@ then
 	git commit -am "$commit"
 	clear
 	echo -e $menu
+	echo "Entrez le nom du tag:"
 	read tag
 	git tag $tag
 	clear
 	echo -e $menu
-	git push --tag origin master
+	git push --tag
 	echo
 else
 	if test $choix = 2
