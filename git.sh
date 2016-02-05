@@ -28,7 +28,11 @@ then
 	git commit -am "$commit"
 	clear
 	echo -e $menu
-	git push origin master
+	read tag
+	git tag $tag
+	clear
+	echo -e $menu
+	git push --tag origin master
 	echo
 else
 	if test $choix = 2
