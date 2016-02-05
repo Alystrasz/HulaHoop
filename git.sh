@@ -31,7 +31,7 @@ then
 	
 	echo "Voulez-vous créer un tag ? [y/N]"
 	read t
-	if test $t = o
+	if test $t = y
 	then
 		clear
 		echo -e $menu
