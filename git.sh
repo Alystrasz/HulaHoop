@@ -28,10 +28,12 @@ then
 	git commit -am "$commit"
 	clear
 	echo -e $menu
-	echo "Entrez le nom du tag:"
-	read tag
-	git tag $tag
-	clear
+	
+	#echo "Entrez le nom du tag:"
+	#read tag
+	#git tag $tag
+	#clear
+	
 	echo -e $menu
 	git push --tag
 	echo
