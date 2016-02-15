@@ -36,44 +36,49 @@ int main(void){
   char buffer_reader[BUFFER_READER];
   int sread = 0;
  
-  if((socket_client = accept(socket_serveur, NULL, NULL)) == -1)
+  while(1)
   {
-    perror("accept");
-    //TODO gestion des erreurs
-    return 1;
-  }
+    if((socket_client = accept(socket_serveur, NULL, NULL)) == -1)
+    {
+      perror("accept");
+      //TODO gestion des erreurs
+      return 1;
+    }
   
-  if(!fork())
-  {
+    if(!fork())
+    {
       initialiser_signaux();
 
     
-    /* écrit le message de bienvenue */
-    if(write(socket_client, message_bienvenue, strlen(message_bienvenue)) < 0)
-    {
-      perror("write");
-      return 1;
-    }
-     
-    /* Service de bégayement */
-    while((sread = read(socket_client, buffer_reader, BUFFER_READER)) > 0)
-    {
-      if(write(socket_client, buffer_reader, sread) < 0)
-      { 
+      /* écrit le message de bienvenue */
+      if(write(socket_client, message_bienvenue, strlen(message_bienvenue)) < 0)
+      {
 	perror("write");
 	return 1;
-      }  
+      }
+     
+      /* Service de bégayement */
+      while((sread = read(socket_client, buffer_reader, BUFFER_READER)) > 0)
+      {
+	if(write(socket_client, buffer_reader, sread) < 0)
+	{ 
+	  perror("write");
+	  return 1;
+	}  
+      }
+      if(sread == -1)
+      {
+	perror("read");
+	return 1;
+      }
+      //TODO le père doit traité erreur fils
     }
-    if(sread == -1)
+    else
     {
-      perror("read");
-      return 1;
+      wait(NULL);
     }
-    //TODO le père doit traité erreur fils
+    close(socket_client);
   }
-  else
-  {
-    wait(NULL);
-  }
+  close(socket_serveur);
   return 0;
 }
