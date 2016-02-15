@@ -53,17 +53,42 @@ int creer_serveur(int port)
   return 0;
 }
 
+void traitement_signal(int sig)
+{
+  printf("Signal %d reçu\n",sig);
+  /* attend un fils */
+  if(sig == SIGCHLD)
+  {
+    if(waitpid(-1, NULL, 0) == -1)
+    {
+      perror("waitpid");
+    }
+  }
+  /* ignore les SIGPIPE */
+  else if(sig == SIGPIPE)
+  {
+    if(signal(sig, SIG_IGN) == SIG_ERR)
+    {
+      perror("signal(SIGPIPE, SIG_IGN)");
+    }
+  }
+}
+
 void initialiser_signaux(void)
 {
-  struct sigaction sa_pipe;
-  /* On ignore les signaux */
-  sa_pipe.sa_handler = SIG_IGN;
+  struct sigaction sa;
+  /* notre  */
+  sa.sa_handler = traitement_signal;
   /* ensemble des signaux vides */
-  sigemptyset(&sa_pipe.sa_mask);
+  sigemptyset(&sa.sa_mask);
   /* option par default */
-  sa_pipe.sa_flags = 0;
-  if(sigaction(SIGPIPE, &sa_pipe, NULL) == -1)
+  sa.sa_flags = SA_RESTART;
+  if(sigaction(SIGPIPE, &sa, NULL) == -1)
   {
     perror("sigaction(SIGPIPE)");
-  } 
+  }
+  if(sigaction(SIGCHLD, &sa, NULL) == -1)
+  {
+    perror("sigaction(SIGCHLD)");
+  }
 }
