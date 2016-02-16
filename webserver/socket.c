@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <arpa/inet.h>
 
@@ -17,8 +18,7 @@ int creer_serveur(int port)
   if((socket_serveur = socket(AF_INET, SOCK_STREAM, 0)) == -1)
   {
     perror("socket_serveur");
-    //TODO gestion des erreurs
-    return -1;
+    return EXIT_FAILURE;
   }
 
   /* Configuration de la socket serveur */
@@ -30,15 +30,14 @@ int creer_serveur(int port)
   int optval = 1;
   if(setsockopt(socket_serveur, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1)
   {
-    perror ( "Can not set SO_REUSEADDR option");
-    return -1;
+    perror ("Can not set SO_REUSEADDR option");
+    return EXIT_FAILURE;
   }
   
   if(bind(socket_serveur, ( struct sockaddr *)&saddr, sizeof ( saddr )) == -1)
   {
     perror("bind socket_serveur");
-    //TODO gestion des erreurs
-    return -1;
+    return EXIT_FAILURE;
   }
   
   /* Utilisation de la socket serveur 
@@ -47,10 +46,9 @@ int creer_serveur(int port)
   if(listen(socket_serveur, 10) == -1)
   {
     perror("listen socket_serveur");
-    //TODO gestion des erreurs
-    return -1;
+    return EXIT_FAILURE;
   }
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 void traitement_signal(int sig)
@@ -60,35 +58,25 @@ void traitement_signal(int sig)
   if(sig == SIGCHLD)
   {
     if(waitpid(-1, NULL, 0) == -1)
-    {
       perror("waitpid");
-    }
   }
   /* ignore les SIGPIPE */
   else if(sig == SIGPIPE)
-  {
     if(signal(sig, SIG_IGN) == SIG_ERR)
-    {
       perror("signal(SIGPIPE, SIG_IGN)");
-    }
-  }
 }
 
 void initialiser_signaux(void)
 {
   struct sigaction sa;
-  /* notre  */
+  /* handler */
   sa.sa_handler = traitement_signal;
   /* ensemble des signaux vides */
   sigemptyset(&sa.sa_mask);
   /* option par default */
   sa.sa_flags = SA_RESTART;
   if(sigaction(SIGPIPE, &sa, NULL) == -1)
-  {
     perror("sigaction(SIGPIPE)");
-  }
   if(sigaction(SIGCHLD, &sa, NULL) == -1)
-  {
     perror("sigaction(SIGCHLD)");
-  }
 }
