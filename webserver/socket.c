@@ -7,6 +7,8 @@
 #include <arpa/inet.h>
 
 #include <signal.h>
+#include <unistd.h>
+
 
 #include "socket.h"
 
@@ -30,12 +32,14 @@ int creer_serveur(int port)
   int optval = 1;
   if(setsockopt(socket_serveur, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1)
   {
+    close(socket_serveur);
     perror ("Can not set SO_REUSEADDR option");
     return EXIT_FAILURE;
   }
   
   if(bind(socket_serveur, ( struct sockaddr *)&saddr, sizeof ( saddr )) == -1)
   {
+    close(socket_serveur);
     perror("bind socket_serveur");
     return EXIT_FAILURE;
   }
@@ -45,6 +49,7 @@ int creer_serveur(int port)
   
   if(listen(socket_serveur, 10) == -1)
   {
+    close(socket_serveur);
     perror("listen socket_serveur");
     return EXIT_FAILURE;
   }

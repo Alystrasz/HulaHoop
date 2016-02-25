@@ -15,6 +15,7 @@
 #define BUFFER_READER 255
 
 extern int socket_serveur;
+
 int main(void){
 
 
@@ -40,14 +41,13 @@ int main(void){
   {
     /* accepte une connexion  */
     if((socket_client = accept(socket_serveur, NULL, NULL)) == -1)
-    {
       perror("accept");
-      return EXIT_FAILURE;
-    }
 
     /* ouvre un flux */
     if((flux_client = fdopen(socket_client, "w+")) == NULL)
     {
+      close(socket_serveur);
+      close(socket_client);
       perror("fdopen");
       return EXIT_FAILURE;
     }
@@ -60,29 +60,16 @@ int main(void){
       /* Service de bégayement */
       while(fgets(buffer_reader, BUFFER_READER, flux_client) != NULL)
       {
-	fprintf(flux_client, "<HulaHoop>");
-	fprintf(flux_client, "%s", buffer_reader);
+	fprintf(stdout, "<HulaHoop>");
+	fprintf(stdout, "%s", buffer_reader);
       }
+
+      if(fclose(flux_client) == -1)
+	perror("fclose");
     }
-    else
-    {
-      wait(NULL);
-    }
-    if(fclose(flux_client) == -1)
-    {
-      perror("fclose");
-      return EXIT_FAILURE;
-    }
-    if(close(socket_client) == -1)
-    {
-      perror("close");
-      return EXIT_FAILURE;
-    }
+    else   
+    close(socket_client);
   }
-  if(close(socket_serveur) == -1)
-  {
-    perror("close");
-    return EXIT_FAILURE;
-  }
+  close(socket_serveur);
   return EXIT_SUCCESS;
 }
