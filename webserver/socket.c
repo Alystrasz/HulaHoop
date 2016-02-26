@@ -68,22 +68,14 @@ int simple_get(char *req)
   //ptr = strtok(buffer, separateur);
   if(strcmp("GET", (ptr = strtok(buffer, " "))) != 0)
     return 0;
-  fprintf(stdout, "%s\n", ptr);
-  ptr = strtok(NULL, " ");
-  fprintf(stdout, "%s\n", ptr);
-
+  strtok(NULL, " ");
   ptr = strtok(NULL, " ");
   
   if(strcmp("HTTP/1.0\r\n", ptr) == 0 || strcmp("HTTP/1.1\r\n", ptr) == 0)
-  {
-      fprintf(stdout, "%s\n", ptr);
-
     return 1;
-  }
-  fprintf(stdout, "lol %s\n", ptr);
-
   return 0;
 }
+
 
 void traitement_signal(int sig)
 {
