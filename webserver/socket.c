@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <arpa/inet.h>
 
+#include <string.h>
 #include <signal.h>
 #include <unistd.h>
 
@@ -54,6 +55,34 @@ int creer_serveur(int port)
     return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;
+}
+
+int simple_get(char *req)
+{
+  char *ptr;
+  //char *separateur = { " " };
+  char *buffer;
+  
+  buffer = strdup(req);
+  
+  //ptr = strtok(buffer, separateur);
+  if(strcmp("GET", (ptr = strtok(buffer, " "))) != 0)
+    return 0;
+  fprintf(stdout, "%s\n", ptr);
+  ptr = strtok(NULL, " ");
+  fprintf(stdout, "%s\n", ptr);
+
+  ptr = strtok(NULL, " ");
+  
+  if(strcmp("HTTP/1.0\r\n", ptr) != 0 || strcmp("HTTP/1.1\r\n", ptr) != 0)
+  {
+      fprintf(stdout, "%s\n", ptr);
+
+    return 0;
+  }
+  fprintf(stdout, "lol %s\n", ptr);
+
+  return (strtok(NULL, " ") == NULL);
 }
 
 void traitement_signal(int sig)

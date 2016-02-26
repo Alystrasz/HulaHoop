@@ -57,18 +57,25 @@ int main(void){
       /* écrit le message de bienvenue */
       fprintf(flux_client, message_bienvenue, strlen(message_bienvenue));
      
-      /* Service de bégayement */
+      /* Service de bégayement 
       while(fgets(buffer_reader, BUFFER_READER, flux_client) != NULL)
       {
 	fprintf(stdout, "<HulaHoop>");
 	fprintf(stdout, "%s", buffer_reader);
       }
-
+      */
+      
+      fgets(buffer_reader, BUFFER_READER, flux_client);
+      if(simple_get(buffer_reader))
+      {
+	fprintf(stdout, "Nice!");
+	fflush(stdout);
+      }
       if(fclose(flux_client) == -1)
 	perror("fclose");
     }
     else   
-    close(socket_client);
+      close(socket_client);
   }
   close(socket_serveur);
   return EXIT_SUCCESS;
