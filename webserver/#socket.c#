@@ -85,6 +85,7 @@ int simple_get(char *req)
   return 0;
 }
 
+
 void traitement_signal(int sig)
 {
   printf("Signal %d reçu\n",sig);
