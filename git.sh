@@ -42,6 +42,7 @@ then
 		clear
 		echo -e $menu
 		git push --tag
+		git push origin master
 	else
 		clear
 		echo -e $menu
