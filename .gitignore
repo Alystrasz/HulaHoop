@@ -1,0 +1,11 @@
+# Ignorer tous les fichiers temporaires
+*~
+
+# Ignorer les fichiers temporaires de Emacs
+\#*#
+
+# Ignorer les fichiers objets
+*.o
+
+# Ignorer les sauvegardes de Emacs
+.#*
