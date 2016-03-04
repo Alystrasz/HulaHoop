@@ -68,9 +68,13 @@ int simple_get(char *req)
   //ptr = strtok(buffer, separateur);
   if(strcmp("GET", (ptr = strtok(buffer, " "))) != 0)
     return 0;
-  strtok(NULL, " ");
+
   ptr = strtok(NULL, " ");
-  
+  /* une fonction qui cherche le contenue dispo?  */
+  if(strcmp("/", ptr) != 0)
+    return 404;
+
+  ptr = strtok(NULL, " ");
   if(strcmp("HTTP/1.0\r\n", ptr) == 0 || strcmp("HTTP/1.1\r\n", ptr) == 0)
     return 1;
   return 0;
