@@ -15,19 +15,6 @@
 
 int socket_serveur;
 
-enum http_method {
-  HTTP_GET,
-  HTTP_UNSUPPORTED,
-};
-
-typedef struct
-{
-  enum http_method method;
-  int major_version;
-  int minor_version;
-  char *url;
-} http_request;
-
 int creer_serveur(int port)
 {
   /* Création de la socket serveur */
@@ -72,47 +59,72 @@ int creer_serveur(int port)
 
 char *fgets_or_exit(char *buffer, int size, FILE *stream)
 {
-  return NULL;
+  char *buf;
+  if((buf = fgets(buffer, size, stream)) == NULL)
+    exit(EXIT_FAILURE);
+  return buf;
 }
 
 int parse_http_request(const char *request_line, http_request *request)
 {
-  return 0;
+  char *methode;
+  char *request_target;
+  char *http_version;
+  char *buffer = strdup(request_line);
+  
+  /* On recupere les infos a analyser */
+  if((methode = strtok(buffer, " ")) == NULL)
+    return 0;
+  if((request_target = strtok(NULL, " ")) == NULL)
+     return 0;
+  if((http_version = strtok(NULL, " ")) == NULL)
+    return 0;
+  
+  /* On analyse les infos recupere et on renseigne la struct request */
+  if(strcmp(methode, "GET") == 0)
+    request->method = HTTP_GET;
+  else
+    request->method = HTTP_UNSUPPORTED;
+
+  /* une fonction pour analyser l'url? */
+  request->url = request_target;
+
+  /* le code pourrait etre factorise pour l'affectation de la version majeur
+     mais je prend les devant si jamais il me prend l'envie de le rendre compatible HTTP/2 */
+  if(strcmp("HTTP/1.0\r\n", http_version) == 0)
+  {
+    request->major_version = 1;
+    request->minor_version = 0;
+  }
+  else if(strcmp("HTTP/1.1\r\n", http_version) == 0)
+  {
+    request->major_version = 1;
+    request->minor_version = 1;
+  }
+  else
+    return 0;
+  return 1;
 }
 
 void skip_headers(FILE *client)
 {
-  
+  char buf[255];
+  while(buf[0] != '\r' && buf[1] != '\n')
+    fgets_or_exit(buf, 255, client);
 }
 
-void send_status( FILE *client, int code, const char *reason_phrase)
+void send_status(FILE *client, int code, const char *reason_phrase)
 {
-
+  fprintf(client, "HTTP/1.1 %d %s\r\n", code, reason_phrase);
 }
 
-int simple_get(char *req)
+void send_response(FILE *client, int code, const char *reason_phrase, const char *message_body)
 {
-  char *ptr;
-  //char *separateur = { " " };
-  char *buffer;
-  
-  buffer = strdup(req);
-  
-  //ptr = strtok(buffer, separateur);
-  if(strcmp("GET", (ptr = strtok(buffer, " "))) != 0)
-    return 0;
+  send_status(client, code, reason_phrase);
+  fprintf(client, "Content-Length: %zu\r\n\r\n", strlen(message_body));
 
-  ptr = strtok(NULL, " ");
-  /* une fonction qui cherche le contenue dispo?  */
-  if(strcmp("/", ptr) != 0)
-    return 404;
-
-  ptr = strtok(NULL, " ");
-  if(strcmp("HTTP/1.0\r\n", ptr) == 0 || strcmp("HTTP/1.1\r\n", ptr) == 0)
-    return 1;
-  return 0;
+  fprintf(client, "%s", message_body);
 }
-
 
 void traitement_signal(int sig)
 {

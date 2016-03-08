@@ -29,17 +29,14 @@ int main(void){
 
   initialiser_signaux();
 
-  const char* msg200 = "HTTP/1.1 200 OK\r\nContent-Length: ";
-  const char* msg400 = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n";
-  const char* msg404 = "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Length: 15\r\n\r\n404 Not Found\r\n";
   const char* msg_bienvenue = "                                                                                             \n                                                                                             \n                                                                                             \n                                                                                             \n                                                                                             \n                                                                                             \n                                 .::.`             .``                                       \n                               `::,.``           ...``                                       \n                               :;;,.```        ..,,..`                                       \n                              ,;::,.``` `    ...,:,:.`                                       \n                              :;::,,.```:  .,..,,:;,.`                                       \n                             `:,;:,,,,``,`..,,,,,,:,``                                       \n                             `:,;:,,.:,:.``,,,,.``:.``                                       \n                              ,,':,,;;`,:``,.`   `,.``                                       \n                              .,';,,,.`,,```     .,```                                       \n                              `,;';,,,.`,``      ,.```                                       \n                              `,:::,,,..:,`      ,```                                        \n                               :,:;,,,,...`     ..```                                        \n                              `:';,:,,,,,,`    `,.```                                        \n                              ,::'+;:,,,.      :;.``                                         \n                             .,:::';,:,,``    ,;;:``                                         \n                           `..,.,::;:,,.``   `;:;,``                                         \n                      `````...```.``::.`.`   ::,:,,`                                         \n                  ``.`````....,.```,::,`,```::,:,:,,                                         \n               .....`.......,` ';  `,,:`,````;;,::,                                          \n             .........,,,.`    ;+  ,,,,```````::..,                                          \n            `,.....,,,,        :; `,.,..``````,:..`                                          \n             .,,..``````` `,:,,,;,,`....`````..,,.,                                          \n              `..,.````````,::::::;:`..`````.`,,,.`                                          \n                `........`.,:;::.:::,,`````.:,,,,..                                          \n                  `,,,.....:::;:,::::,,,,,,,,,,,,,.`                                         \n                    ``.....::;;::::::::,,,,,,,,:,,,.                                         \n                          `,:;;:;.:::::::,:::::::,,.                                         \n                             `.,,,::::::::::::::::,.                                         \n                               `;;,:;:::::::::::::,.                                         \n                               .:,,::::::::::::,,,..                                         \n                               `: ,.;:::::::,:::,,..                                         \n                               `:  ::::::::::,,,,...                                         \n                                .  ::;:;::,:,,,,....`                                        \n                               `.   '::::,::,,,,,....                                        \n                               `.   :;,:::::,,,,,,...                                        \n                               .,    +,:::::,,,,,,,.`                                        \n                               .:    :;,::::,,,,...`                                         \n                               .:    `+::::::,,..```                                         \n                               ,:     .:::::,```````                                         \n                               ,:     ;.,,..````````                                         \n        ` ```.,..,:,,,,:,,:,````.```   .....````````                                         \n      .:,,:,:;.,:,:`::,,::..``.`  .`` `.,...````````  `                                      \n   `` `.,;`::`.. `             `` `` `.......``````````.,::,.`.`                             \n  `.`.,.`                            .........`````  ` ,,,::,, ,,::::,..`                    \n  ..`,                              +...,.....`````           ````:;::`:,::::,`.             \n  ..```                             ++;,...`..`````                      `:;:.,,`,``         \n   ..``.`                          ;`..+'......````,                          .`.:`..```     \n    .`;;::`                       :'+` ,:'+,...```,,                               `.`..``   \n     `:;;;;:,.                    ;''+'` `;,;#+'+'.`                                   ,,``` \n        `::::::,,.`              .'''++++;`  `.:' :                                     ,,,, \n          ``,:::::::,,`          :''''''''+'';;'`::                                    .,::: \n              ..,::,:,:::,,.     :'''''';;;+''';,:`                                 `,::::;` \n                  `,:::,,,,,,,,,,,'''::;;;;'';';;,                            .,,,::::::;:   \n                        .:,,,,,,....      `   `,:.       ``    ```   `````.:::::::::::,.     \n                              .,,,,`                                  `` ``:,::::,` `        \n                                 ,;'';:;;:.`   `                     ``````.`                \n                                 .'''''''':''+++.:                                           \n                                  '+'''';;:'++'',`                                           \n                                  '+'''';;:;'''',                                            \n                                  ''''''';;:'+'':                                            \n                                  ;'''''';;:;+;',                                            \n                                  ''+''''';;,'''`                                            \n                                  .''+'''';;,'';                                             \n                                   '+'+'''';:'';                                             \n                                   #'''''''';'';.                                            \n                                   +'++''''';:'`                                             \n                                   ,'++++''';:' '                                            \n                                    @''++'''':: .                                            \n                                    #'+'+'''';`                                              \n                                    '#++'+''''`                                              \n                                    ,#'++'''''.                                              \n                                    `#++++'''':                                              \n                                     '#++'+''';                                              \n                                     +#+++'+'''                                              \n                                      +#+++''''.                                             \n                                      +'#++++''.                                             \n                                      .'+++++''`                                             \n                                       #''+++++                                              \n                                       '#+'+++'                                              \n                                        '@+'++                                               \n                                                                                             \n                                                                                             \n\n";
 
-  /* Acceptation d'une connexion */
   int socket_client;
-  int code;
+  int request_client;
   char buffer_reader[BUFFER_READER];
   FILE *flux_client;
- 
+  http_request http_req;
+
   while(1)
   {
     /* accepte une connexion  */
@@ -57,36 +54,23 @@ int main(void){
   
     if(!fork())
     {
-      /* écrit le message de bienvenue */
-     
-      /* Service de bégayement 
-      while(fgets(buffer_reader, BUFFER_READER, flux_client) != NULL)
-      {
-	fprintf(stdout, "<HulaHoop>");
-	fprintf(stdout, "%s", buffer_reader);
-      }
-      */
+      /* on recupere ce que dis le client  */
+      fgets_or_exit(buffer_reader, BUFFER_READER, flux_client);
       
-      fgets(buffer_reader, BUFFER_READER, flux_client);
-      if((code = simple_get(buffer_reader)))
-      {
-	while(buffer_reader[0] != '\r' && buffer_reader[1] != '\n')
-	  fgets(buffer_reader, BUFFER_READER, flux_client);
+      /* on regarde si on comprend ce qu'il nous dis  */
+      request_client = parse_http_request(buffer_reader, &http_req);
+      skip_headers(flux_client);
 
-	if(code == 404)
-	  fprintf(flux_client, msg404, strlen(msg404));
-	else
-	{	    
-	  fprintf(flux_client, msg200, strlen(msg200));
-	  fprintf(flux_client, "%zu\r\n\r\n", strlen(msg_bienvenue));
-	  fprintf(flux_client, msg_bienvenue, strlen(msg_bienvenue));
-	}
-	//fflush(stdout);
-      }
+      /* on repond au client  */
+      if(request_client == 0)
+	send_response(flux_client, 400, "Bad Request", "Bad request\r\n");
+      else if(http_req.method == HTTP_UNSUPPORTED)
+	send_response(flux_client, 405, "Method Not Allowed" , "Method Not Allowed\r\n");
+      else if(strcmp(http_req.url, "/") == 0)
+	send_response(flux_client, 200, "OK", msg_bienvenue);
       else
-      {
-	fprintf(flux_client, msg400, strlen(msg400));
-      }
+	send_response(flux_client, 404, "Not Found", "Not Found\r\n");
+      
       if(fclose(flux_client) == -1)
 	perror("fclose");
     }
