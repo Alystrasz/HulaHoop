@@ -126,6 +126,49 @@ void send_response(FILE *client, int code, const char *reason_phrase, const char
   fprintf(client, "%s", message_body);
 }
 
+char *rewrite_url(char *url)
+{
+  char *absolute_path;
+  char *buf = strdup(url);
+
+  if((absolute_path = strtok(buf, "?")) == NULL)
+    return NULL;
+  return absolute_path;
+}
+
+int check_and_open(const char *url, const char *document_root)
+{
+  printf("%s%s", url, document_root);
+  return 0;
+}
+
+int get_file_size(int fd)
+{
+
+}
+
+int copy(int in, int out)
+{
+  char buf[1024];
+  int sread;
+  
+  while((sread = read(in, buf, 1024)) > 0)
+  {
+    if(write(out, buf, sread) == -1)
+    {
+      perror("write");
+      return -1;
+    }
+  }
+  if(sread == -1)
+  {
+    perror("read");
+    return -1;
+  }
+  return 0;
+}
+
+
 void traitement_signal(int sig)
 {
   printf("Signal %d reçu\n",sig);

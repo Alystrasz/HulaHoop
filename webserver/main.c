@@ -3,9 +3,12 @@
 #include <string.h>
 #include <errno.h>
 
+
+
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 
 #include <unistd.h>
 
@@ -16,9 +19,25 @@
 
 extern int socket_serveur;
 
-int main(void){
 
+void usage(void)
+{
+  fprintf(stderr, "HulaHoop dossier_accessible\n");
+  exit(EXIT_FAILURE);
+}
 
+int main(int argc, char **argv){
+  if(argc != 2)
+    usage();
+  
+  const char *document_root = rewrite_url(*(++argv));
+
+  if(!S_IFDIR(document_root))
+    usage();
+  if(access(document_root, X_OK) == -1)
+    usage();
+
+  printf("%s\n", document_root);
 
   //Création du serveur sur le port PORT
   if(creer_serveur(PORT) == 1)
