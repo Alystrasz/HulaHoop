@@ -30,7 +30,7 @@ int main(int argc, char **argv){
   if(argc != 2)
     usage();
   
-  const char *document_root = rewrite_url(*(++argv));
+  const char *document_root = *(++argv);
   struct stat stat_root;
   if(stat(document_root, &stat_root) == -1)
   {
@@ -63,6 +63,8 @@ int main(int argc, char **argv){
   FILE *flux_client;
   http_request http_req;
 
+  printf("%s\n",msg_bienvenue);
+
   while(1)
   {
     /* accepte une connexion  */
@@ -92,13 +94,14 @@ int main(int argc, char **argv){
 	send_response(flux_client, 400, "Bad Request", "Bad request\r\n");
       else if(http_req.method == HTTP_UNSUPPORTED)
 	send_response(flux_client, 405, "Method Not Allowed" , "Method Not Allowed\r\n");
-      else if(strcmp(http_req.url, "/") == 0)
-	send_response(flux_client, 200, "OK", msg_bienvenue);
-      else if((ressource = check_and_open(http_req.url, document_root)) != -1)
+      else if((ressource = check_and_open(rewrite_url(http_req.url), document_root)) != -1)
       {
 	send_status(flux_client, 200, "OK");
-	fprintf(flux_client, "Content-Length: %d\r\n", get_file_size(ressource));
-	
+	//fonctionne mieux sans 
+	//fprintf(flux_client, "Content-Type: text/html\r\n");
+	fprintf(flux_client, "Content-Length: %d\r\n\r\n", get_file_size(ressource));
+	fflush(flux_client);
+
 	copy(ressource, socket_client);
       }
       else

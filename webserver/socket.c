@@ -139,7 +139,7 @@ char *rewrite_url(char *url)
 
   if((absolute_path = strtok(buf, "?")) == NULL)
     return NULL;
-  return absolute_path;
+  return (strcmp(absolute_path, "/") == 0)?"/index.html":absolute_path;
 }
 
 int check_and_open(const char *url, const char *document_root)
@@ -202,7 +202,7 @@ void traitement_signal(int sig)
   /* attend un fils */
   if(sig == SIGCHLD)
   {
-    if(waitpid(-1, NULL, 0) == -1)
+    if(waitpid(-1, NULL, WUNTRACED) == -1)
       perror("waitpid");
   }
   /* ignore les SIGPIPE */
