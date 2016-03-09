@@ -1,10 +1,16 @@
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <arpa/inet.h>
+
+
+#include <fcntl.h>
+
+
 
 #include <string.h>
 #include <signal.h>
@@ -34,11 +40,11 @@ int creer_serveur(int port)
   if(setsockopt(socket_serveur, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1)
   {
     close(socket_serveur);
-    perror ("Can not set SO_REUSEADDR option");
+    perror("Can not set SO_REUSEADDR option");
     return EXIT_FAILURE;
   }
   
-  if(bind(socket_serveur, ( struct sockaddr *)&saddr, sizeof ( saddr )) == -1)
+  if(bind(socket_serveur, (struct sockaddr *)&saddr, sizeof (saddr)) == -1)
   {
     close(socket_serveur);
     perror("bind socket_serveur");
@@ -138,13 +144,34 @@ char *rewrite_url(char *url)
 
 int check_and_open(const char *url, const char *document_root)
 {
-  printf("%s%s", url, document_root);
-  return 0;
+  char url_cp[strlen(url)];
+  char doc_cp[strlen(document_root)];
+
+  strcpy(url_cp, url);
+  strcpy(doc_cp, document_root);
+  
+  char *path = strcat(doc_cp, url_cp);
+  printf("%s\n", path);
+
+  
+  int fd;
+  if((fd = open(path, O_RDONLY)) == -1)
+  {
+    perror("open");
+    return -1;
+  }
+  return fd;
 }
 
 int get_file_size(int fd)
 {
-
+  struct stat stat_ressource;
+  if(fstat(fd, &stat_ressource))
+  {
+    perror("fstat");
+    return -1;
+  }
+  return stat_ressource.st_size;
 }
 
 int copy(int in, int out)

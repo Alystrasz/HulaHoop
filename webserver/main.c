@@ -31,8 +31,14 @@ int main(int argc, char **argv){
     usage();
   
   const char *document_root = rewrite_url(*(++argv));
+  struct stat stat_root;
+  if(stat(document_root, &stat_root) == -1)
+  {
+    perror("stat");
+    return EXIT_FAILURE;
+  }
 
-  if(!S_IFDIR(document_root))
+  if(!S_ISDIR(stat_root.st_mode))
     usage();
   if(access(document_root, X_OK) == -1)
     usage();
@@ -52,6 +58,7 @@ int main(int argc, char **argv){
 
   int socket_client;
   int request_client;
+  int ressource;
   char buffer_reader[BUFFER_READER];
   FILE *flux_client;
   http_request http_req;
@@ -87,6 +94,10 @@ int main(int argc, char **argv){
 	send_response(flux_client, 405, "Method Not Allowed" , "Method Not Allowed\r\n");
       else if(strcmp(http_req.url, "/") == 0)
 	send_response(flux_client, 200, "OK", msg_bienvenue);
+      else if((ressource = check_and_open(http_req.url, document_root)) != -1)
+      {
+	printf("%d\n", get_file_size(ressource));
+      }
       else
 	send_response(flux_client, 404, "Not Found", "Not Found\r\n");
       
