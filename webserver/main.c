@@ -96,7 +96,10 @@ int main(int argc, char **argv){
 	send_response(flux_client, 200, "OK", msg_bienvenue);
       else if((ressource = check_and_open(http_req.url, document_root)) != -1)
       {
-	printf("%d\n", get_file_size(ressource));
+	send_status(flux_client, 200, "OK");
+	fprintf(flux_client, "Content-Length: %d\r\n", get_file_size(ressource));
+	
+	copy(ressource, socket_client);
       }
       else
 	send_response(flux_client, 404, "Not Found", "Not Found\r\n");
