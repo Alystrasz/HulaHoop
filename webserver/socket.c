@@ -120,6 +120,11 @@ void skip_headers(FILE *client)
     fgets_or_exit(buf, 255, client);
 }
 
+void send_stats(FILE *client)
+{
+  fprintf(client, "TODO");
+}
+
 void send_status(FILE *client, int code, const char *reason_phrase)
 {
   fprintf(client, "HTTP/1.1 %d %s\r\n", code, reason_phrase);
