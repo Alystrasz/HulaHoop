@@ -11,13 +11,14 @@
 #include <fcntl.h>
 
 
-
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
 
 
 #include "socket.h"
+
+
 
 int socket_serveur;
 
@@ -139,23 +140,28 @@ char *rewrite_url(char *url)
 
   if((absolute_path = strtok(buf, "?")) == NULL)
     return NULL;
-  return (strcmp(absolute_path, "/") == 0)?"/index.html":absolute_path;
+  return (strcmp(absolute_path, "/") == 0)?"index.html":++absolute_path;
 }
 
 int check_and_open(const char *url, const char *document_root)
 {
   char url_cp[strlen(url)];
-  char doc_cp[strlen(document_root)];
+  int len = strlen(document_root);
+  char doc_cp[len];
 
   strcpy(url_cp, url);
   strcpy(doc_cp, document_root);
+                    
+  char *real_path;
+  if((real_path = realpath(strcat(doc_cp, url_cp), NULL)) == NULL)
+    return -404;
   
-  char *path = strcat(doc_cp, url_cp);
-  printf("%s\n", path);
-
+  printf("%s\n", real_path);
+  if(strncmp(document_root, real_path, len) != 0)
+    return -403;
   
   int fd;
-  if((fd = open(path, O_RDONLY)) == -1)
+  if((fd = open(real_path, O_RDONLY)) == -1)
   {
     perror("open");
     return -1;
@@ -200,9 +206,10 @@ void traitement_signal(int sig)
 {
   printf("Signal %d reçu\n",sig);
   /* attend un fils */
+  int status;
   if(sig == SIGCHLD)
   {
-    if(waitpid(-1, NULL, WUNTRACED) == -1)
+    if(waitpid(-1, &status, WUNTRACED) == -1)
       perror("waitpid");
   }
   /* ignore les SIGPIPE */

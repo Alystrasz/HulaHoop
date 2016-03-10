@@ -94,7 +94,7 @@ int main(int argc, char **argv){
 	send_response(flux_client, 400, "Bad Request", "Bad request\r\n");
       else if(http_req.method == HTTP_UNSUPPORTED)
 	send_response(flux_client, 405, "Method Not Allowed" , "Method Not Allowed\r\n");
-      else if((ressource = check_and_open(rewrite_url(http_req.url), document_root)) != -1)
+      else if((ressource = check_and_open(rewrite_url(http_req.url), document_root)) > 0)
       {
 	send_status(flux_client, 200, "OK");
 	//fonctionne mieux sans 
@@ -104,6 +104,8 @@ int main(int argc, char **argv){
 
 	copy(ressource, socket_client);
       }
+      else if(ressource == -403)
+	send_response(flux_client, 403, "Access Denied", "Access Denied\r\n");
       else
 	send_response(flux_client, 404, "Not Found", "Not Found\r\n");
       
@@ -113,7 +115,7 @@ int main(int argc, char **argv){
     else
     {
       close(socket_client);
-      wait(NULL);
+      //wait(NULL);
     }
   }
   close(socket_serveur);
