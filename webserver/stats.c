@@ -1,4 +1,4 @@
-static web_stats stats;
+//static web_stats stats;
 
 int init_stats(void)
 {
@@ -7,5 +7,5 @@ int init_stats(void)
 
 struct web_stats *get_stats(void)
 {
-  return NULL;
+  return 0;
 }

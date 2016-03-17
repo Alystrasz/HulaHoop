@@ -9,7 +9,8 @@
 
 
 #include <fcntl.h>
-
+#include <limits.h>
+#include <libgen.h>
 
 #include <string.h>
 #include <signal.h>
@@ -122,7 +123,34 @@ void skip_headers(FILE *client)
 
 void send_stats(FILE *client)
 {
-  fprintf(client, "TODO");
+  char path_to_exe[64];
+  sprintf(path_to_exe, "/proc/%d/exe", getpid());
+  char resolved_path_to_exe[1024];
+  realpath(path_to_exe, resolved_path_to_exe);
+
+
+  int fd_stats;
+  int sread;
+  char buffer_reader[256];
+  sprintf(resolved_path_to_exe, "%s/stats.html", dirname(resolved_path_to_exe));
+  printf("%s\n", resolved_path_to_exe);
+  if((fd_stats = open(resolved_path_to_exe, O_RDONLY)) > -1)
+  {
+    send_status(client, 200, "OK");
+    fprintf(client, "Content-Length: %d\r\n\r\n", get_file_size(fd_stats));
+    while((sread = read(fd_stats, buffer_reader, 256)) > 0)
+    {
+      fprintf(client, "%s", buffer_reader);
+    }
+    if(sread == -1)
+    {
+      perror("read");
+    }
+  }
+  else
+  {
+    send_response(client, 404, "Not Found", "Not Found\r\n");
+  }  
 }
 
 void send_status(FILE *client, int code, const char *reason_phrase)
