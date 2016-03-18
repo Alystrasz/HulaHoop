@@ -18,7 +18,7 @@
 
 
 #include "socket.h"
-
+#include "stats.h"
 
 
 int socket_serveur;
@@ -156,6 +156,15 @@ void send_stats(FILE *client)
 void send_status(FILE *client, int code, const char *reason_phrase)
 {
   fprintf(client, "HTTP/1.1 %d %s\r\n", code, reason_phrase);
+  web_stats *stats = get_stats();
+  if(code == 200)
+    ++stats->ok_200;
+  else if(code == 400)
+    ++stats->ko_400;
+  else if(code == 403)
+    ++stats->ko_403;
+  else if(code == 404)
+    ++stats->ko_404;
 }
 
 void send_response(FILE *client, int code, const char *reason_phrase, const char *message_body)

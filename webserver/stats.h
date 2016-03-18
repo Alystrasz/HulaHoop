@@ -9,4 +9,4 @@ typedef struct
 } web_stats;
 
 int init_stats(void);
-struct web_stats *get_stats(void);
+web_stats *get_stats(void);
